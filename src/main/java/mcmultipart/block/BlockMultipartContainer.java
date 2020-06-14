@@ -416,23 +416,22 @@ public class BlockMultipartContainer extends Block implements ITileEntityProvide
 		    Pair<Vec3d, Vec3d> vectors = RayTraceHelper.getRayTraceVectors(player);
 		    RayTraceResult hit = collisionRayTrace(state, world, pos, vectors.getLeft(), vectors.getRight());
 		    Optional<TileMultipartContainer> tile = getTile(world, pos);
-		    if (!world.isRemote)
-		    {
-			    IPartSlot slot = MCMultiPart.slotRegistry.getValue(hit.subHit);
-			    TileMultipartContainer container = tile.get();
-			    if(container != null)
-			    {
-				    Optional<IMultipart> part = container.getPart(slot);
-				    if(part.isPresent())
-				    {
-				    	SoundType partSound = part.get().getSoundType(state, world, pos, entity);
-				    	if(partSound != null)
-					    {
-					    	sound = partSound;
-					    }
-				    }
-			    }
-		    }
+
+            IPartSlot slot = MCMultiPart.slotRegistry.getValue(hit.subHit);
+            TileMultipartContainer container = tile.get();
+            if(container != null)
+            {
+                Optional<IMultipart> part = container.getPart(slot);
+                if(part.isPresent())
+                {
+                    SoundType partSound = part.get().getSoundType(state, world, pos, entity);
+                    if(partSound != null)
+                    {
+                        sound = partSound;
+                    }
+                }
+            }
+
 	    }
     	return sound;
     }
