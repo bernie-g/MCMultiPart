@@ -59,12 +59,8 @@ public class ItemBlockMultipart extends ItemBlock {
                     return EnumActionResult.FAIL;
                 }
             }
-            SoundType soundType = multipartBlock.getSoundType(world.getBlockState(pos), world, pos, player);
-            if(soundType == null)
-            {
-                soundType = world.getBlockState(pos).getBlock().getSoundType(world.getBlockState(pos), world,
+            SoundType soundType = world.getBlockState(pos).getBlock().getSoundType(world.getBlockState(pos), world,
                         pos, player);
-            }
             world.playSound(player, pos, soundType.getPlaceSound(), SoundCategory.BLOCKS,
                     (soundType.getVolume() + 1.0F) / 2.0F,
                     soundType.getPitch() * 0.8F);

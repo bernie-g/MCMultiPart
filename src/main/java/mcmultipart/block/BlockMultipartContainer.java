@@ -4,6 +4,8 @@ import mcmultipart.MCMultiPart;
 import mcmultipart.RayTraceHelper;
 import mcmultipart.api.container.IMultipartContainerBlock;
 import mcmultipart.api.container.IPartInfo;
+import mcmultipart.api.multipart.IMultipart;
+import mcmultipart.api.multipart.MultipartHelper;
 import mcmultipart.api.slot.IPartSlot;
 import mcmultipart.api.slot.SlotUtil;
 import mcmultipart.multipart.PartInfo;
@@ -407,7 +409,32 @@ public class BlockMultipartContainer extends Block implements ITileEntityProvide
 
     @Override
     public SoundType getSoundType(IBlockState state, World world, BlockPos pos, Entity entity) {
-        return super.getSoundType(state, world, pos, entity);// TODO: Maybe? Needs a PR with the type of sound requested... >_>
+    	SoundType sound = super.getSoundType(state, world, pos, entity);
+    	if(entity instanceof EntityPlayer)
+	    {
+	    	EntityPlayer player = (EntityPlayer) entity;
+		    Pair<Vec3d, Vec3d> vectors = RayTraceHelper.getRayTraceVectors(player);
+		    RayTraceResult hit = collisionRayTrace(state, world, pos, vectors.getLeft(), vectors.getRight());
+		    Optional<TileMultipartContainer> tile = getTile(world, pos);
+		    if (!world.isRemote)
+		    {
+			    IPartSlot slot = MCMultiPart.slotRegistry.getValue(hit.subHit);
+			    TileMultipartContainer container = tile.get();
+			    if(container != null)
+			    {
+				    Optional<IMultipart> part = container.getPart(slot);
+				    if(part.isPresent())
+				    {
+				    	SoundType partSound = part.get().getSoundType(state, world, pos, entity);
+				    	if(partSound != null)
+					    {
+					    	sound = partSound;
+					    }
+				    }
+			    }
+		    }
+	    }
+    	return sound;
     }
 
     @Override
