@@ -336,4 +336,9 @@ public interface IMultipart {
     public default void dropPartAsItem(IPartInfo part, int fortune) {
         part.getState().getBlock().dropBlockAsItem(part.getActualWorld(), part.getPartPos(), part.getState(), fortune);
     }
+
+    public default SoundType getSoundType(IBlockState state, World world, BlockPos pos, Entity entity)
+    {
+        return null;
+    }
 }
