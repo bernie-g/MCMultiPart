@@ -45,10 +45,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.function.ToDoubleFunction;
-import java.util.function.ToIntFunction;
+import java.util.function.*;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("deprecation")
@@ -56,6 +53,7 @@ public class BlockMultipartContainer extends Block implements ITileEntityProvide
 
     public static final PropertyBool PROPERTY_TICKING = PropertyBool.create("ticking");
     public static final PropertyClientInfo PROPERTY_INFO = new PropertyClientInfo();
+    public static Supplier<SoundType> getSound;
 
     public BlockMultipartContainer() {
         super(Material.GROUND);
@@ -409,37 +407,7 @@ public class BlockMultipartContainer extends Block implements ITileEntityProvide
 
     @Override
     public SoundType getSoundType(IBlockState state, World world, BlockPos pos, Entity entity) {
-    	SoundType sound = super.getSoundType(state, world, pos, entity);
-    	if(entity instanceof EntityPlayer)
-	    {
-	        try
-            {
-                EntityPlayer player = (EntityPlayer) entity;
-                Pair<Vec3d, Vec3d> vectors = RayTraceHelper.getRayTraceVectors(player);
-                RayTraceResult hit = collisionRayTrace(state, world, pos, vectors.getLeft(), vectors.getRight());
-                Optional<TileMultipartContainer> tile = getTile(world, pos);
-
-                IPartSlot slot = MCMultiPart.slotRegistry.getValue(hit.subHit);
-                TileMultipartContainer container = tile.get();
-                if (container != null)
-                {
-                    Optional<IMultipart> part = container.getPart(slot);
-                    if (part.isPresent())
-                    {
-                        SoundType partSound = part.get().getSoundType(state, world, pos, entity);
-                        if (partSound != null)
-                        {
-                            sound = partSound;
-                        }
-                    }
-                }
-            }
-	        catch(Exception e)
-            {
-
-            }
-	    }
-    	return sound;
+    	return getSound.get();
     }
 
     @Override
